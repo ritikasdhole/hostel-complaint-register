@@ -1,5 +1,4 @@
 const express = require("express");
-
 const app = express();
 
 const commitSha = (
@@ -8,6 +7,7 @@ const commitSha = (
   "local"
 ).slice(0, 7);
 
+app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -58,13 +58,15 @@ app.get("/", (req, res) => {
           <td>${escapeHtml(complaint.roomNumber)}</td>
           <td>${escapeHtml(complaint.category)}</td>
           <td>${escapeHtml(complaint.description)}</td>
-          <td>${escapeHtml(complaint.status)}</td>
+          <td class="status ${complaint.status === "Pending" ? "pending" : "resolved"}">
+              ${escapeHtml(complaint.status)}
+          </td>
           <td>
             ${
               complaint.status === "Pending"
                 ? `
                   <form method="POST" action="/complaints/${complaint.id}/resolve">
-                    <button type="submit">Mark Resolved</button>
+                    <button class="resolve-btn" type="submit">Mark Resolved</button>
                   </form>
                 `
                 : "Completed"
@@ -80,75 +82,87 @@ app.get("/", (req, res) => {
     <html>
       <head>
         <title>Hostel Complaint Register</title>
+        <link rel="stylesheet" href="/style.css">
       </head>
 
       <body>
+        <main class="container">
         <h1>Hostel Complaint Register</h1>
+        <p class="subtitle">Hostel maintenance and complaint tracking system</p>
 
         <h2>Complaint Summary</h2>
 
-        <p>Total Complaints: <strong>${totalComplaints}</strong></p>
-        <p>Open Complaints: <strong>${pendingComplaints}</strong></p>
-        <p>Resolved Complaints: <strong>${resolvedComplaints}</strong></p>
+        <div class="dashboard">
+          <div class="card">
+            <h3>Total Complaints</h3>
+            <p>${totalComplaints}</p>
+          </div>
+
+          <div class="card">
+            <h3>Open Complaints</h3>
+            <p>${pendingComplaints}</p>
+          </div>
+
+          <div class="card">
+            <h3>Resolved Complaints</h3>
+            <p>${resolvedComplaints}</p>
+          </div>
+        </div>
 
         <hr>
 
+        <section class="section">
         <h2>Raise a Complaint</h2>
 
         <form method="POST" action="/complaints">
+          <div class="form-grid">
 
-          <label for="studentName">Student Name:</label>
-          <input
-            id="studentName"
-            name="studentName"
-            type="text"
-            required
-          >
-          <br><br>
+            <div class="form-group">
+              <label for="studentName">Student Name</label>
+              <input id="studentName" name="studentName" type="text" required>
+            </div>
+            <br><br>
 
-          <label for="roomNumber">Room Number:</label>
-          <input
-            id="roomNumber"
-            name="roomNumber"
-            type="text"
-            required
-          >
-          <br><br>
+            <div class="form-group">
+              <label for="roomNumber">Room Number:</label>
+              <input id="roomNumber" name="roomNumber" type="text" required>
+            </div>
+            <br><br>
 
-          <label for="category">Category:</label>
-          <select id="category" name="category" required>
-            <option value="">Select category</option>
-            <option value="Electrical">Electrical</option>
-            <option value="Plumbing">Plumbing</option>
-            <option value="Cleanliness">Cleanliness</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Wi-Fi">Wi-Fi</option>
-            <option value="Other">Other</option>
-          </select>
-          <br><br>
+            <div class="form-group">
+              <label for="category">Category:</label>
+              <select id="category" name="category" required>
+                <option value="">Select category</option>
+                <option value="Electrical">Electrical</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Cleanliness">Cleanliness</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Wi-Fi">Wi-Fi</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <br><br>
 
-          <label for="description">Description:</label>
-          <br>
+            <div class="form-group full">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+            <br><br>
 
-          <textarea
-            id="description"
-            name="description"
-            rows="4"
-            cols="50"
-            required
-          ></textarea>
+            <div class="form-group full">
+              <button class="submit-btn" type="submit">Submit Complaint</button>
+            </div>
 
-          <br><br>
-
-          <button type="submit">Submit Complaint</button>
-
+          </div>
         </form>
+        </section>
 
         <hr>
 
+        <section class="section">
         <h2>Complaints</h2>
 
-        <table border="1" cellpadding="10">
+        <table>
           <thead>
             <tr>
               <th>ID</th>
@@ -165,12 +179,14 @@ app.get("/", (req, res) => {
             ${complaintRows}
           </tbody>
         </table>
+        </section>
 
         <hr>
 
         <footer>
           Running Commit: <strong>${escapeHtml(commitSha)}</strong>
         </footer>
+        </main>
       </body>
     </html>
   `);
