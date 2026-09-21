@@ -64,6 +64,16 @@ test("invalid complaint is rejected", async () => {
   server.close();
 });
 
+test("existing complaint can be resolved", async () => {
+  const response = await fetch(`${baseUrl}/complaints/1/resolve`, {
+    method: "POST",
+    redirect: "manual",
+  });
+
+  assert.equal(response.status, 302);
+  server.close();
+});
+
 test("non-existent complaint cannot be resolved", async () => {
   const response = await fetch(`${baseUrl}/complaints/99999/resolve`, {
     method: "POST",
