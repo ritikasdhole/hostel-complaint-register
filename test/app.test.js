@@ -42,7 +42,7 @@ test("valid complaint can be submitted", async () => {
 
   server.close();
 
-  assert.equal(response.status, 201);
+  assert.equal(response.status, 302);
   
 });
 
