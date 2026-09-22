@@ -25,6 +25,20 @@ test("health route returns ok", async () => {
   server.close();
 });
 
+test("complaints API returns complaint data", async () => {
+  const response = await fetch(`${baseUrl}/api/complaints`);
+
+  assert.equal(response.status, 200);
+
+  const data = await response.json();
+
+  assert.ok(Array.isArray(data));
+  assert.ok(data.length >= 1);
+  assert.equal(data[0].status, "Pending");
+
+  server.close();
+});
+
 test("valid complaint can be submitted", async () => {
   const response = await fetch(`${baseUrl}/complaints`, {
     method: "POST",
