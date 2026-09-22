@@ -40,9 +40,10 @@ test("valid complaint can be submitted", async () => {
     redirect: "manual",
   });
 
-  assert.equal(response.status, 201);
-
   server.close();
+
+  assert.equal(response.status, 201);
+  
 });
 
 test("invalid complaint is rejected", async () => {
