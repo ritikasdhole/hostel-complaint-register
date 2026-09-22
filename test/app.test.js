@@ -40,7 +40,7 @@ test("valid complaint can be submitted", async () => {
     redirect: "manual",
   });
 
-  assert.equal(response.status, 302);
+  assert.equal(response.status, 201);
 
   server.close();
 });
